@@ -22,13 +22,28 @@ class ViewController: UIViewController {
         let gracehop = ["full_name": "Grace Hopper", "date_of_birth": "December 9, 1906"]
         
         // Get a reference to the users
-        //let usersRef = ref.childByAppendingPath("/users")
+        let usersRef = ref.childByAppendingPath("/users")
         
         // Create a dict of users
         let users = ["alanisawesome": alanisawesome, "gracehop": gracehop]
         
         // Set the users dictionary to the database of users
-        ref.setValue(users)
+//        usersRef.setValue(users)
+        
+        // Get a ref to the user grace hopper
+        let hopperRef = usersRef.childByAppendingPath("gracehop")
+        
+        // Create a nickname for Grace
+        let nickname = ["nickname": "Amazing Grace"]
+        let eyecolor = ["eye_color" : "green"]
+        
+        // Update the ref (user:hopper) to have a nickname
+//        hopperRef.updateChildValues(nickname)
+//        hopperRef.updateChildValues(eyecolor)
+        
+        usersRef.updateChildValues(["alanisawesome/nickname" : "Alan the Machine", "gracehop/nickname" : "Amazing Grace"])
+        usersRef.updateChildValues(["alanisawesome/eyecolor":"green","gracehop/eyecolor":"blue"])
+        
     }
 
     override func didReceiveMemoryWarning() {
