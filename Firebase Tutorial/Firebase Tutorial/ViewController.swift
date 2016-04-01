@@ -13,9 +13,8 @@ class ViewController: UIViewController {
 
     var uid = ""
     var userDefauts = NSUserDefaults.standardUserDefaults()
-    let ref = Firebase(url: "https://5mintutorial2.firebaseio.com")
+    var ref = Firebase(url: "https://5mintutorial2.firebaseio.com")
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -23,6 +22,14 @@ class ViewController: UIViewController {
         if (userDefauts.stringForKey("uid") != nil) {
             uid = userDefauts.stringForKey("uid")!
             print("We already have a UID")
+            
+            // retrieve the groups for the associated UID
+            let usersRef = self.ref.childByAppendingPath("users/\(self.uid)")
+            usersRef.observeEventType(.Value, withBlock: { snapshot in
+                print(snapshot.value)
+                }, withCancelBlock: { error in
+                    print(error.description)
+            })
         }
         else {
             // create a UID
@@ -33,7 +40,14 @@ class ViewController: UIViewController {
                     print(authData.uid)
                     print("login sucess")
                     self.uid = authData.uid
+                    
+                    // save the UID locally
                     self.userDefauts.setValue(self.uid, forKey: "uid")
+                    
+                    // save the UID remotely
+                    let usersRef = self.ref.childByAppendingPath("users")
+                    let groups = ["ACLU", "PP", "EANY"]
+                    usersRef.updateChildValues([self.uid : groups])
                 }
             }
         }
@@ -43,7 +57,4 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
 }
-
