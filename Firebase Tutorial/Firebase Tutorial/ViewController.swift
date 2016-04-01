@@ -16,6 +16,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var ref = Firebase(url: "https://5mintutorial2.firebaseio.com")
     let listOfGroups = ["ACLU", "PP", "EANY"]
     var listOfSelectedGroups : NSMutableArray = [];
+    //@property (strong, nonatomic) NSMutableArray *tableViewData;
+
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
@@ -96,6 +98,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     @IBAction func indexChanged(sender: AnyObject) {
         self.tableView.reloadData()
+    }
+    
+    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        if self.segmentControl.selectedSegmentIndex == 0 {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == UITableViewCellEditingStyle.Delete {
+            self.tableView .deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
+        }
     }
 }
 
