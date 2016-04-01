@@ -9,14 +9,19 @@
 import UIKit
 import Firebase
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource  {
 
     var uid = ""
     var userDefauts = NSUserDefaults.standardUserDefaults()
     var ref = Firebase(url: "https://5mintutorial2.firebaseio.com")
-
+    let listOfGroups = ["ACLU", "PP", "EANY"]
+    @IBOutlet weak var tableView: UITableView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.tableView.delegate = self
+        self.tableView.dataSource = self
         
         // check if there is a stored UID
         if (userDefauts.stringForKey("uid") != nil) {
@@ -57,4 +62,17 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    func tableView(tableView:UITableView, numberOfRowsInSection section:Int) -> Int
+    {
+        return self.listOfGroups.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        let cell:UITableViewCell = self.tableView.dequeueReusableCellWithIdentifier("cell")! as UITableViewCell
+        cell.textLabel?.text = self.listOfGroups[indexPath.row]
+        
+        return cell
+        }
 }
