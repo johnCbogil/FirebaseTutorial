@@ -93,7 +93,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-     self.listOfSelectedGroups.addObject(self.listOfGroups[indexPath.row])
+        
+        if !self.listOfSelectedGroups.containsObject(self.listOfGroups[indexPath.row]) {
+            self.listOfSelectedGroups.addObject(self.listOfGroups[indexPath.row])
+        }
     }
     
     @IBAction func indexChanged(sender: AnyObject) {
