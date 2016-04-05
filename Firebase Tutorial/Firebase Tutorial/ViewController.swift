@@ -14,10 +14,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var uid = ""
     var userDefauts = NSUserDefaults.standardUserDefaults()
     var ref = Firebase(url: "https://5mintutorial2.firebaseio.com")
+    var usersRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users")
     let listOfGroups = ["ACLU", "PP", "EANY"]
     var listOfSelectedGroups : NSMutableArray = [];
-    //@property (strong, nonatomic) NSMutableArray *tableViewData;
-
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
@@ -55,11 +54,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     
                     // save the UID locally
                     self.userDefauts.setValue(self.uid, forKey: "uid")
-                    
-                    // save the UID remotely
-                    let usersRef = self.ref.childByAppendingPath("users")
-                    let groups = ["ACLU", "PP", "EANY"]
-                    usersRef.updateChildValues([self.uid : groups])
                 }
             }
         }
@@ -75,6 +69,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             return self.listOfGroups.count
         }
         else {
+            self.fetchSubscribedGrous()
             return self.listOfSelectedGroups.count
         }
     }
@@ -96,11 +91,22 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         if !self.listOfSelectedGroups.containsObject(self.listOfGroups[indexPath.row]) {
             self.listOfSelectedGroups.addObject(self.listOfGroups[indexPath.row])
+            self.saveSubscribedGroups()
         }
     }
     
     @IBAction func indexChanged(sender: AnyObject) {
         self.tableView.reloadData()
+    }
+    
+    func saveSubscribedGroups() {
+        self.usersRef.updateChildValues([self.uid : self.listOfSelectedGroups])
+    }
+    
+    func fetchSubscribedGrous() {
+        ref.observeEventType(.ChildAdded, withBlock: { snapshot in
+            print(snapshot.value.objectForKey(self.uid))
+        })
     }
 }
 
