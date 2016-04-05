@@ -99,20 +99,5 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBAction func indexChanged(sender: AnyObject) {
         self.tableView.reloadData()
     }
-    
-    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        if self.segmentControl.selectedSegmentIndex == 0 {
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-    
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == UITableViewCellEditingStyle.Delete {
-            self.tableView .deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
-        }
-    }
 }
 
