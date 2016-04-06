@@ -15,8 +15,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var userDefauts = NSUserDefaults.standardUserDefaults()
     var ref = Firebase(url: "https://5mintutorial2.firebaseio.com")
     var usersRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users")
-    let listOfGroups = ["ACLU", "PP", "EANY"]
-    var listOfSelectedGroups : NSMutableArray = [];
     var tableViewData : NSMutableArray = [];
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
@@ -29,7 +27,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.tableView.dataSource = self
         
         self.userAuth()
-        
+        self.fetchSubscribedGroups()
     }
     
     override func didReceiveMemoryWarning() {
@@ -69,24 +67,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(tableView:UITableView, numberOfRowsInSection section:Int) -> Int {
-        if self.segmentControl.selectedSegmentIndex == 0 {
-            return self.listOfGroups.count
-        }
-        else {
-            //            self.fetchSubscribedGroups()
-            return self.listOfSelectedGroups.count
-        }
+
+        return self.tableViewData.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell:UITableViewCell = self.tableView.dequeueReusableCellWithIdentifier("cell")! as UITableViewCell
-        if self.segmentControl.selectedSegmentIndex == 0 {
-            cell.textLabel?.text = self.listOfGroups[indexPath.row]
-        }
-        else {
-            cell.textLabel?.text = self.listOfSelectedGroups[indexPath.row] as? String
-        }
+            cell.textLabel?.text = self.tableViewData[indexPath.row] as? String
         
         return cell
     }
@@ -95,24 +83,47 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-        if !self.listOfSelectedGroups.containsObject(self.listOfGroups[indexPath.row]) {
-            self.listOfSelectedGroups.addObject(self.listOfGroups[indexPath.row])
-            self.saveSubscribedGroups()
-        }
+//        if !self.tableViewData.containsObject(self.listOfGroups[indexPath.row]) {
+//            self.tableViewData.addObject(self.listOfGroups[indexPath.row])
+//            self.saveSubscribedGroups()
+//        }
+        
+//        if (self.selectedSegment == 0) {
+//            [self followInterestGroup:[self.tableViewData objectAtIndex:indexPath.row]];
+//        }
     }
     
+    
     @IBAction func indexChanged(sender: AnyObject) {
+        
+        if self.segmentControl.selectedSegmentIndex == 0 {
+            self.fetchGroups()
+        }
+        else {
+            self.fetchSubscribedGroups()
+        }
+        
         self.tableView.reloadData()
     }
     
-    func saveSubscribedGroups() {
-        self.usersRef.updateChildValues([self.uid : self.listOfSelectedGroups])
+    func fetchGroups() {
+        self.tableViewData = ["ACLU", "PP", "EANY"]
+        self.tableView.reloadData()
     }
     
     func fetchSubscribedGroups() {
         ref.observeEventType(.ChildAdded, withBlock: { snapshot in
-            print(snapshot.value.objectForKey(self.uid))
+            self.tableViewData = (snapshot.value.objectForKey(self.uid)) as! NSMutableArray
+            self.tableView.reloadData()
         })
+    }
+    
+    func subscribeToGroup() {
+        
+    }
+    
+    func unsubscribeToGroup() {
+        
     }
 }
 
