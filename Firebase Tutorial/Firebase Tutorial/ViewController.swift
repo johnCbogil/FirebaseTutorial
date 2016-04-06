@@ -113,7 +113,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func fetchGroups() {
-
+        self.groupsRef.observeEventType(.Value, withBlock: { snapshot in
+            print(snapshot.value)
+            }, withCancelBlock: { error in
+                print(error.description)
+        })
     }
     
     func fetchSubscribedGroups() {
