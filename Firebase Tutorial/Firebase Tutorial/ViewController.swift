@@ -15,6 +15,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var userDefauts = NSUserDefaults.standardUserDefaults()
     var ref = Firebase(url: "https://5mintutorial2.firebaseio.com")
     var usersRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users")
+    var groupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/Groups")
+
     var tableViewData : NSMutableArray = [];
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
@@ -43,8 +45,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("We already have a UID")
             
             // retrieve the groups for the associated UID
-            let usersRef = self.ref.childByAppendingPath("users/\(self.uid)")
-            usersRef.observeEventType(.Value, withBlock: { snapshot in
+            self.usersRef.observeEventType(.Value, withBlock: { snapshot in
                 print(snapshot.value)
                 }, withCancelBlock: { error in
                     print(error.description)
@@ -63,7 +64,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     // save the UID locally
                     self.userDefauts.setValue(self.uid, forKey: "uid")
                     
+                    let subscribedGroups : NSMutableArray = []
+                    
                     // save the UID remotely
+                    self.usersRef.updateChildValues([self.uid : subscribedGroups])
                 }
             }
         }
@@ -106,16 +110,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func fetchGroups() {
        ref.observeEventType(.ChildAdded, withBlock: { snapshot in
-            self.tableViewData = (snapshot.value) as! NSMutableArray
-            self.tableView.reloadData()
+
         })
     }
     
     func fetchSubscribedGroups() {
-        ref.observeEventType(.ChildAdded, withBlock: { snapshot in
-            self.tableViewData = (snapshot.value.objectForKey(self.uid)) as! NSMutableArray
-            self.tableView.reloadData()
-        })
+
     }
     
     func subscribeToGroup() {
