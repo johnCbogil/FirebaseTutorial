@@ -120,13 +120,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         })
     }
     
+    func subscribeToGroup() {
+//        let currentUserRef = self.usersRef.childByAppendingPath(self.uid)
+//        currentUserRef.updateChildValues([:])
+    }
+    
     func fetchSubscribedGroups() {
 
     }
     
-    func subscribeToGroup() {
-        
-    }
+
     
     func unsubscribeToGroup() {
         
