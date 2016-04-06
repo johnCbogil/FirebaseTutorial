@@ -63,11 +63,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     
                     // save the UID locally
                     self.userDefauts.setValue(self.uid, forKey: "uid")
-                    
-                    let subscribedGroups : NSMutableArray = []
-                    
+                                        
                     // save the UID remotely
-                    self.usersRef.updateChildValues([self.uid : subscribedGroups])
+
                 }
             }
         }
@@ -109,9 +107,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func fetchGroups() {
-       ref.observeEventType(.ChildAdded, withBlock: { snapshot in
 
-        })
     }
     
     func fetchSubscribedGroups() {
