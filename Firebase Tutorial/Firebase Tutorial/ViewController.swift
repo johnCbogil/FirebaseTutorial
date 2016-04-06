@@ -16,6 +16,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var ref = Firebase(url: "https://5mintutorial2.firebaseio.com")
     var usersRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users")
     var groupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/Groups")
+    let groups = ["ACLU", "PP", "EANY"]
 
     var tableViewData : NSMutableArray = [];
     
@@ -30,11 +31,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         self.userAuth()
         self.fetchGroups()
+//        self.createGroups()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func createGroups() {
+        self.groupsRef.setValue(self.groups)
     }
     
     func userAuth() {
@@ -45,11 +51,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("We already have a UID")
             
             // retrieve the groups for the associated UID
-            self.usersRef.observeEventType(.Value, withBlock: { snapshot in
-                print(snapshot.value)
-                }, withCancelBlock: { error in
-                    print(error.description)
-            })
+//            self.usersRef.observeEventType(.Value, withBlock: { snapshot in
+//                print(snapshot.value.objectForKey(self.uid))
+//                }, withCancelBlock: { error in
+//                    print(error.description)
+//            })
         }
         else {
             // create a UID
@@ -63,9 +69,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     
                     // save the UID locally
                     self.userDefauts.setValue(self.uid, forKey: "uid")
-                                        
+                    
                     // save the UID remotely
-
+                    self.usersRef.childByAutoId().setValue(self.uid)
                 }
             }
         }
