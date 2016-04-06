@@ -31,7 +31,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         self.userAuth()
         self.fetchGroups()
-//        self.createGroups()
+        self.createGroups()
     }
     
     override func didReceiveMemoryWarning() {
@@ -94,9 +94,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-//        if (self.selectedSegment == 0) {
-//            [self followInterestGroup:[self.tableViewData objectAtIndex:indexPath.row]];
-//        }
+        if (self.segmentControl.selectedSegmentIndex == 0) {
+            //[self followInterestGroup:[self.tableViewData objectAtIndex:indexPath.row]];
+            self.subscribeToGroup(self.tableViewData.objectAtIndex(indexPath.row))
+        }
     }
     
     
@@ -115,14 +116,17 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func fetchGroups() {
         self.groupsRef.observeEventType(.Value, withBlock: { snapshot in
             print(snapshot.value)
+            self.tableViewData = snapshot.value as! NSMutableArray
             }, withCancelBlock: { error in
                 print(error.description)
         })
     }
     
-    func subscribeToGroup() {
-//        let currentUserRef = self.usersRef.childByAppendingPath(self.uid)
-//        currentUserRef.updateChildValues([:])
+    func subscribeToGroup(sender: AnyObject) {
+        let currentUserRef = self.usersRef.childByAppendingPath(self.uid)
+        let subscribedGroups = self.tableViewData
+        subscribedGroups.addObject(sender)
+        currentUserRef.updateChildValues(["subscribedGroups" : subscribedGroups])
     }
     
     func fetchSubscribedGroups() {
