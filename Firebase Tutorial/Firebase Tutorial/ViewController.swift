@@ -27,7 +27,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.tableView.dataSource = self
         
         self.userAuth()
-        self.fetchSubscribedGroups()
+        self.fetchGroups()
     }
     
     override func didReceiveMemoryWarning() {
@@ -36,6 +36,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func userAuth() {
+        
         // check if there is a stored UID
         if (userDefauts.stringForKey("uid") != nil) {
             uid = userDefauts.stringForKey("uid")!
@@ -61,6 +62,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     
                     // save the UID locally
                     self.userDefauts.setValue(self.uid, forKey: "uid")
+                    
+                    // save the UID remotely
                 }
             }
         }
@@ -83,11 +86,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-//        if !self.tableViewData.containsObject(self.listOfGroups[indexPath.row]) {
-//            self.tableViewData.addObject(self.listOfGroups[indexPath.row])
-//            self.saveSubscribedGroups()
-//        }
-        
 //        if (self.selectedSegment == 0) {
 //            [self followInterestGroup:[self.tableViewData objectAtIndex:indexPath.row]];
 //        }
@@ -107,8 +105,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func fetchGroups() {
-        self.tableViewData = ["ACLU", "PP", "EANY"]
-        self.tableView.reloadData()
+       ref.observeEventType(.ChildAdded, withBlock: { snapshot in
+            self.tableViewData = (snapshot.value) as! NSMutableArray
+            self.tableView.reloadData()
+        })
     }
     
     func fetchSubscribedGroups() {
