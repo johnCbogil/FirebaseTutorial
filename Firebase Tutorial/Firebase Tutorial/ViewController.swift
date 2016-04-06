@@ -17,6 +17,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var usersRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users")
     let listOfGroups = ["ACLU", "PP", "EANY"]
     var listOfSelectedGroups : NSMutableArray = [];
+    var tableViewData : NSMutableArray = [];
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
@@ -24,11 +25,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
-        
         self.tableView.delegate = self
         self.tableView.dataSource = self
         
+        self.userAuth()
+        
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    func userAuth() {
         // check if there is a stored UID
         if (userDefauts.stringForKey("uid") != nil) {
             uid = userDefauts.stringForKey("uid")!
@@ -59,17 +68,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     func tableView(tableView:UITableView, numberOfRowsInSection section:Int) -> Int {
         if self.segmentControl.selectedSegmentIndex == 0 {
             return self.listOfGroups.count
         }
         else {
-            self.fetchSubscribedGrous()
+            //            self.fetchSubscribedGroups()
             return self.listOfSelectedGroups.count
         }
     }
@@ -89,6 +93,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        
         if !self.listOfSelectedGroups.containsObject(self.listOfGroups[indexPath.row]) {
             self.listOfSelectedGroups.addObject(self.listOfGroups[indexPath.row])
             self.saveSubscribedGroups()
@@ -103,7 +109,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.usersRef.updateChildValues([self.uid : self.listOfSelectedGroups])
     }
     
-    func fetchSubscribedGrous() {
+    func fetchSubscribedGroups() {
         ref.observeEventType(.ChildAdded, withBlock: { snapshot in
             print(snapshot.value.objectForKey(self.uid))
         })
