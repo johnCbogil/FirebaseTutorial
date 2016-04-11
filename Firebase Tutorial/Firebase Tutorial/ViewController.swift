@@ -100,7 +100,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    
     @IBAction func indexChanged(sender: AnyObject) {
         
         if self.segmentControl.selectedSegmentIndex == 0 {
@@ -117,6 +116,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.groupsRef.observeEventType(.Value, withBlock: { snapshot in
             print(snapshot.value)
             self.tableViewData = snapshot.value as! NSMutableArray
+            self.tableView.reloadData()
             }, withCancelBlock: { error in
                 print(error.description)
         })
@@ -130,6 +130,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func fetchSubscribedGroups() {
+        self.tableViewData = []
 
     }
     
