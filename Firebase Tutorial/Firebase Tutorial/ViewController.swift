@@ -15,7 +15,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var userDefauts = NSUserDefaults.standardUserDefaults()
     var ref = Firebase(url: "https://5mintutorial2.firebaseio.com")
     var usersRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users")
-    var groupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/Groups")
+    var groupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/groups")
     let groups = ["ACLU", "PP", "EANY"]
     let subscribedGroups : NSMutableArray = []
     
@@ -128,17 +128,21 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.subscribedGroups.addObject(sender)
             let subscribedGroupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users/\(self.uid)/subscribedGroups")
             subscribedGroupsRef.setValue(self.subscribedGroups)
-        }        
+        }
     }
     
     func fetchSubscribedGroups() {
         
-        // This is only temporary
-        self.tableViewData = []
+        let subscribedGroupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users/\(self.uid)/subscribedGroups")
         
+        subscribedGroupsRef.observeEventType(.Value, withBlock: { snapshot in
+            print(snapshot.value)
+            self.tableViewData = snapshot.value as! NSMutableArray
+            self.tableView.reloadData()
+            }, withCancelBlock: { error in
+                print(error.description)
+        })
     }
-    
-    
     
     func unsubscribeToGroup() {
         
