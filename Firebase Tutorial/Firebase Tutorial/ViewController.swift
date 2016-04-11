@@ -17,7 +17,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var usersRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users")
     var groupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/Groups")
     let groups = ["ACLU", "PP", "EANY"]
-
+    
     var tableViewData : NSMutableArray = [];
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
@@ -51,11 +51,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             print("We already have a UID")
             
             // retrieve the groups for the associated UID
-//            self.usersRef.observeEventType(.Value, withBlock: { snapshot in
-//                print(snapshot.value.objectForKey(self.uid))
-//                }, withCancelBlock: { error in
-//                    print(error.description)
-//            })
+            //            self.usersRef.observeEventType(.Value, withBlock: { snapshot in
+            //                print(snapshot.value.objectForKey(self.uid))
+            //                }, withCancelBlock: { error in
+            //                    print(error.description)
+            //            })
         }
         else {
             // create a UID
@@ -69,23 +69,20 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     
                     // save the UID locally
                     self.userDefauts.setValue(self.uid, forKey: "uid")
-                    
-                    // save the UID remotely
-                    self.usersRef.childByAutoId().setValue(self.uid)
                 }
             }
         }
     }
     
     func tableView(tableView:UITableView, numberOfRowsInSection section:Int) -> Int {
-
+        
         return self.tableViewData.count
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell:UITableViewCell = self.tableView.dequeueReusableCellWithIdentifier("cell")! as UITableViewCell
-            cell.textLabel?.text = self.tableViewData[indexPath.row] as? String
+        cell.textLabel?.text = self.tableViewData[indexPath.row] as? String
         
         return cell
     }
@@ -108,11 +105,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         else {
             self.fetchSubscribedGroups()
         }
-        
         self.tableView.reloadData()
     }
     
     func fetchGroups() {
+        
         self.groupsRef.observeEventType(.Value, withBlock: { snapshot in
             print(snapshot.value)
             self.tableViewData = snapshot.value as! NSMutableArray
@@ -123,18 +120,30 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func subscribeToGroup(sender: AnyObject) {
+        
         let currentUserRef = self.usersRef.childByAppendingPath(self.uid)
+        let currentUserSubscriptionsRef = currentUserRef.childByAppendingPath("subscribedGroups")
         let subscribedGroups = self.tableViewData
-        subscribedGroups.addObject(sender)
-        currentUserRef.updateChildValues(["subscribedGroups" : subscribedGroups])
+        
+        currentUserSubscriptionsRef.observeEventType(.Value, withBlock: { snapshot in
+            
+            if (!snapshot.value.hasChild(sender as! String)) {
+                subscribedGroups.addObject(sender)
+                currentUserRef.updateChildValues(["subscribedGroups" : subscribedGroups])
+                
+            }
+        })
+        
     }
     
     func fetchSubscribedGroups() {
+        
+        // This is only temporary
         self.tableViewData = []
-
+        
     }
     
-
+    
     
     func unsubscribeToGroup() {
         
