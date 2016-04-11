@@ -17,6 +17,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var usersRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users")
     var groupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/Groups")
     let groups = ["ACLU", "PP", "EANY"]
+    let subscribedGroups : NSMutableArray = []
     
     var tableViewData : NSMutableArray = [];
     
@@ -123,7 +124,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func subscribeToGroup(sender: AnyObject) {
         
-        
+        if (!self.subscribedGroups.containsObject(sender)) {
+            self.subscribedGroups.addObject(sender)
+            let subscribedGroupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users/\(self.uid)/subscribedGroups")
+            subscribedGroupsRef.setValue(self.subscribedGroups)
+        }        
     }
     
     func fetchSubscribedGroups() {
