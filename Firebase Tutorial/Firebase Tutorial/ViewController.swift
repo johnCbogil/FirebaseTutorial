@@ -45,7 +45,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func userAuth() {
         
-        // check if there is a stored UID
+        // Check if there is a stored UID
         if (userDefauts.stringForKey("uid") != nil) {
             uid = userDefauts.stringForKey("uid")!
             print("We already have a UID")
@@ -58,7 +58,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             //            })
         }
         else {
-            // create a UID
+            // Create a UID
             ref.authAnonymouslyWithCompletionBlock { error, authData in
                 if error != nil {
                     print("login fail")
@@ -67,8 +67,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                     print("login sucess")
                     self.uid = authData.uid
                     
-                    // save the UID locally
+                    // Save the UID locally
                     self.userDefauts.setValue(self.uid, forKey: "uid")
+                    
+                    // Save the UID remotely
+                    self.usersRef.setValue(self.uid)
                 }
             }
         }
@@ -92,7 +95,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
         if (self.segmentControl.selectedSegmentIndex == 0) {
-            //[self followInterestGroup:[self.tableViewData objectAtIndex:indexPath.row]];
             self.subscribeToGroup(self.tableViewData.objectAtIndex(indexPath.row))
         }
     }
@@ -121,18 +123,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func subscribeToGroup(sender: AnyObject) {
         
-        let currentUserRef = self.usersRef.childByAppendingPath(self.uid)
-        let currentUserSubscriptionsRef = currentUserRef.childByAppendingPath("subscribedGroups")
-        let subscribedGroups = self.tableViewData
-        
-        currentUserSubscriptionsRef.observeEventType(.Value, withBlock: { snapshot in
-            
-            if (!snapshot.value.hasChild(sender as! String)) {
-                subscribedGroups.addObject(sender)
-                currentUserRef.updateChildValues(["subscribedGroups" : subscribedGroups])
-                
-            }
-        })
         
     }
     
