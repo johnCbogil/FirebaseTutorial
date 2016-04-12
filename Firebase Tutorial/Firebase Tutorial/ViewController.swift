@@ -102,7 +102,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
+            self.tableViewData.removeObjectAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            
+            // CRASHING HERE
+            self.unsubscribeToGroup(self.tableViewData[indexPath.row])
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
@@ -152,7 +156,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         })
     }
     
-    func unsubscribeToGroup() {
+    func unsubscribeToGroup(sender: AnyObject) {
+        
+            self.subscribedGroups.removeObject(sender)
+            let subscribedGroupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users/\(self.uid)/subscribedGroups")
+            subscribedGroupsRef.setValue(self.subscribedGroups)
         
     }
 }
