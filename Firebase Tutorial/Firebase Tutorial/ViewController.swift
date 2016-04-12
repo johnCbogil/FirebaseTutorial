@@ -25,6 +25,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet weak var tableView: UITableView!
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         
         self.tableView.delegate = self
@@ -33,11 +34,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.userAuth()
         self.fetchGroups()
         self.createGroups()
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     func createGroups() {
@@ -50,13 +46,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if (userDefauts.stringForKey("uid") != nil) {
             uid = userDefauts.stringForKey("uid")!
             print("We already have a UID")
-            
-            // retrieve the groups for the associated UID
-            //            self.usersRef.observeEventType(.Value, withBlock: { snapshot in
-            //                print(snapshot.value.objectForKey(self.uid))
-            //                }, withCancelBlock: { error in
-            //                    print(error.description)
-            //            })
         }
         else {
             // Create a UID
@@ -97,6 +86,25 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         if (self.segmentControl.selectedSegmentIndex == 0) {
             self.subscribeToGroup(self.tableViewData.objectAtIndex(indexPath.row))
+        }
+    }
+    
+    func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        // Return false if you do not want the specified item to be editable.
+        if self.segmentControl.selectedSegmentIndex == 0 {
+            return false
+        }
+        else {
+            return true
+        }
+    }
+    
+    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .Delete {
+            // Delete the row from the data source
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+        } else if editingStyle == .Insert {
+            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
     }
     
