@@ -17,9 +17,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var usersRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users")
     var groupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/groups")
     let groups = ["ACLU", "PP", "EANY"]
-    let subscribedGroups : NSMutableArray = []
-    
-    var tableViewData : NSMutableArray = [];
+    var subscribedGroups : NSMutableArray = []
+    var listOfGroups : NSMutableArray = [];
     
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
@@ -33,7 +32,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         self.userAuth()
         self.fetchGroups()
-        self.createGroups()
+        //self.createGroups()
     }
     
     func createGroups() {
@@ -69,13 +68,23 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func tableView(tableView:UITableView, numberOfRowsInSection section:Int) -> Int {
         
-        return self.tableViewData.count
-    }
+        if self.segmentControl.selectedSegmentIndex == 0 {
+            return self.listOfGroups.count
+        }
+        else {
+            return self.subscribedGroups.count
+        }    }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         let cell:UITableViewCell = self.tableView.dequeueReusableCellWithIdentifier("cell")! as UITableViewCell
-        cell.textLabel?.text = self.tableViewData[indexPath.row] as? String
+    
+        if self.segmentControl.selectedSegmentIndex == 0 {
+            cell.textLabel?.text = self.listOfGroups[indexPath.row] as? String
+        }
+        else {
+            cell.textLabel?.text = self.subscribedGroups[indexPath.row] as? String
+        }
         
         return cell
     }
@@ -85,7 +94,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
         if (self.segmentControl.selectedSegmentIndex == 0) {
-            self.subscribeToGroup(self.tableViewData.objectAtIndex(indexPath.row))
+            self.subscribeToGroup(self.listOfGroups.objectAtIndex(indexPath.row))
         }
     }
     
@@ -102,11 +111,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
-            self.tableViewData.removeObjectAtIndex(indexPath.row)
+            self.unsubscribeToGroup(self.subscribedGroups[indexPath.row])
+            //self.subscribedGroups.removeObjectAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
             
-            // CRASHING HERE
-            self.unsubscribeToGroup(self.tableViewData[indexPath.row])
+            
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }
@@ -127,7 +136,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         self.groupsRef.observeEventType(.Value, withBlock: { snapshot in
             print(snapshot.value)
-            self.tableViewData = snapshot.value as! NSMutableArray
+            self.listOfGroups = snapshot.value as! NSMutableArray
             self.tableView.reloadData()
             }, withCancelBlock: { error in
                 print(error.description)
@@ -144,23 +153,28 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func fetchSubscribedGroups() {
-        
+
         let subscribedGroupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users/\(self.uid)/subscribedGroups")
-        
         subscribedGroupsRef.observeEventType(.Value, withBlock: { snapshot in
             print(snapshot.value)
-            self.tableViewData = snapshot.value as! NSMutableArray
+            if snapshot.value is NSNull {
+                self.subscribedGroups = []
+            }
+            else {
+                self.subscribedGroups = snapshot.value as! NSMutableArray
+            }
             self.tableView.reloadData()
             }, withCancelBlock: { error in
                 print(error.description)
         })
     }
     
+    // THE USER IS DELETED WHEN THERE ARE NO SUBSCRIBED GROUPS AND THIS IS NOT OK
     func unsubscribeToGroup(sender: AnyObject) {
         
-            self.subscribedGroups.removeObject(sender)
-            let subscribedGroupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users/\(self.uid)/subscribedGroups")
-            subscribedGroupsRef.setValue(self.subscribedGroups)
+        self.subscribedGroups.removeObject(sender)
+        let subscribedGroupsRef = Firebase(url: "https://5mintutorial2.firebaseio.com/users/\(self.uid)/subscribedGroups")
+        subscribedGroupsRef.setValue(self.subscribedGroups)
         
     }
 }
